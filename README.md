@@ -2,7 +2,7 @@
 Author: Vincent Wang
 
 ## Introduction
-This is the final project for ECE 4180 at Georgia Institute of Technology. The goal of this project was to create a bluetooth controlled RC car that could return to you using an inertial measurement unit (IMU) while avoiding obstacles using ultrasonic sensors.
+This is the final project for ECE 4180 at Georgia Institute of Technology. The goal of this project was to create a bluetooth controlled RC car that could return to the user using an inertial measurement unit (IMU) while avoiding obstacles with ultrasonic sensors.
 
 ## Parts List
 * [mbed LPC1768](https://os.mbed.com/platforms/mbed-LPC1768/)
