@@ -7,6 +7,7 @@
  */
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +24,7 @@
 #ifndef SINGLETONPTR_H
 #define SINGLETONPTR_H
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <new>
 #include "platform/mbed_assert.h"
@@ -43,6 +45,10 @@ extern osMutexId_t singleton_mutex_id;
 inline static void singleton_lock(void)
 {
 #ifdef MBED_CONF_RTOS_PRESENT
+    if (!singleton_mutex_id) {
+        // RTOS has not booted yet so no mutex is needed
+        return;
+    }
     osMutexAcquire(singleton_mutex_id, osWaitForever);
 #endif
 }
@@ -56,7 +62,11 @@ inline static void singleton_lock(void)
 inline static void singleton_unlock(void)
 {
 #ifdef MBED_CONF_RTOS_PRESENT
-    osMutexRelease (singleton_mutex_id);
+    if (!singleton_mutex_id) {
+        // RTOS has not booted yet so no mutex is needed
+        return;
+    }
+    osMutexRelease(singleton_mutex_id);
 #endif
 }
 
@@ -80,7 +90,8 @@ struct SingletonPtr {
      * @returns
      *   A pointer to the singleton
      */
-    T* get() {
+    T *get() const
+    {
         if (NULL == _ptr) {
             singleton_lock();
             if (NULL == _ptr) {
@@ -99,14 +110,30 @@ struct SingletonPtr {
      * @returns
      *   A pointer to the singleton
      */
-    T* operator->() {
+    T *operator->() const
+    {
         return get();
     }
 
+    /** Get a reference to the underlying singleton
+     *
+     * @returns
+     *   A reference to the singleton
+     */
+    T &operator*() const
+    {
+        return *get();
+    }
+
     // This is zero initialized when in global scope
-    T *_ptr;
-    // Force data to be 4 byte aligned
-    uint32_t _data[(sizeof(T) + sizeof(uint32_t) - 1) / sizeof(uint32_t)];
+    mutable T *_ptr;
+#if __cplusplus >= 201103L
+    // Align data appropriately
+    alignas(T) mutable char _data[sizeof(T)];
+#else
+    // Force data to be 8 byte aligned
+    mutable uint64_t _data[(sizeof(T) + sizeof(uint64_t) - 1) / sizeof(uint64_t)];
+#endif
 };
 
 #endif

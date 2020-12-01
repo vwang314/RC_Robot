@@ -19,23 +19,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "RtosTimer.h"
+#include "rtos/RtosTimer.h"
 
 #include <string.h>
 
+#include "mbed.h"
 #include "cmsis_os.h"
-#include "mbed_error.h"
+#include "platform/mbed_error.h"
 
 namespace rtos {
 
-RtosTimer::RtosTimer(void (*periodic_task)(void const *argument), os_timer_type type, void *argument) {
+void RtosTimer::constructor(mbed::Callback<void()> func, os_timer_type type) {
 #ifdef CMSIS_OS_RTX
-    _timer.ptimer = periodic_task;
+    _timer.ptimer = (void (*)(const void *))Callback<void()>::thunk;
 
     memset(_timer_data, 0, sizeof(_timer_data));
     _timer.timer = _timer_data;
 #endif
-    _timer_id = osTimerCreate(&_timer, type, argument);
+    _function = func;
+    _timer_id = osTimerCreate(&_timer, type, &_function);
 }
 
 osStatus RtosTimer::start(uint32_t millisec) {

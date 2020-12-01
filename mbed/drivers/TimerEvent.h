@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,22 +44,42 @@ public:
      */
     virtual ~TimerEvent();
 
+#if !defined(DOXYGEN_ONLY)
 protected:
     // The handler called to service the timer event of the derived class
     virtual void handler() = 0;
 
-    // insert relative timestamp in to linked list
+    /** Set relative timestamp of the internal event.
+     * @param   timestamp   event's us timestamp
+     *
+     * @warning
+     * Do not insert more than one timestamp.
+     * The same @a event object is used for every @a insert/insert_absolute call.
+     *
+     * @warning
+     * Ticker's present timestamp is used for reference. For timestamps
+     * from the past the event is scheduled after ticker's overflow.
+     * For reference @see convert_timestamp
+     */
     void insert(timestamp_t timestamp);
 
-    // insert absolute timestamp into linked list
+    /** Set absolute timestamp of the internal event.
+     * @param   timestamp   event's us timestamp
+     *
+     * @warning
+     * Do not insert more than one timestamp.
+     * The same @a event object is used for every @a insert/insert_absolute call.
+     */
     void insert_absolute(us_timestamp_t timestamp);
 
-    // remove from linked list, if in it
+    /** Remove timestamp.
+     */
     void remove();
 
     ticker_event_t event;
 
     const ticker_data_t *_ticker_data;
+#endif
 };
 
 } // namespace mbed

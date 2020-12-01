@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2017 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +18,7 @@
 #define MBED_DEEPSLEEPLOCK_H
 
 #include <limits.h>
-#include "platform/mbed_sleep.h"
+#include "platform/mbed_power_mgmt.h"
 #include "platform/mbed_critical.h"
 
 namespace mbed {
@@ -69,7 +70,7 @@ public:
             sleep_manager_lock_deep_sleep();
         }
         if (0 == count) {
-            error("DeepSleepLock overflow (> USHRT_MAX)");
+            MBED_ERROR1(MBED_MAKE_ERROR(MBED_MODULE_PLATFORM, MBED_ERROR_CODE_OVERFLOW), "DeepSleepLock overflow (> USHRT_MAX)", count);
         }
     }
 
@@ -83,7 +84,7 @@ public:
         }
         if (count == USHRT_MAX) {
             core_util_critical_section_exit();
-            error("DeepSleepLock underflow (< 0)");
+            MBED_ERROR1(MBED_MAKE_ERROR(MBED_MODULE_PLATFORM, MBED_ERROR_CODE_UNDERFLOW), "DeepSleepLock underflow (< 0)", count);
         }
     }
 };

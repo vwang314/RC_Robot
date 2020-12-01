@@ -3,6 +3,7 @@
 /** @{*/
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +120,7 @@ int  spi_master_write(spi_t *obj, int value);
 
 /** Write a block out in master mode and receive a value
  *
- *  The total number of bytes sent and recieved will be the maximum of
+ *  The total number of bytes sent and received will be the maximum of
  *  tx_length and rx_length. The bytes written will be padded with the
  *  value 0xff.
  *

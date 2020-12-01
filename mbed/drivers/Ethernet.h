@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,7 @@
 #include "platform/platform.h"
 #include "platform/NonCopyable.h"
 
-#if defined (DEVICE_ETHERNET) || defined(DOXYGEN_ONLY)
+#if DEVICE_ETHERNET || defined(DOXYGEN_ONLY)
 
 namespace mbed {
 /** \addtogroup drivers */
@@ -59,7 +60,7 @@ class Ethernet : private NonCopyable<Ethernet> {
 
 public:
 
-    /** Initialise the ethernet interface.
+    /** Initialize the ethernet interface.
      */
     Ethernet();
 
@@ -98,7 +99,7 @@ public:
      */
     int send();
 
-    /** Recevies an arrived ethernet packet.
+    /** Receives an arrived ethernet packet.
      *
      *  Receiving an ethernet packet will drop the last received ethernet packet
      *  and make a new ethernet packet ready to read.
@@ -110,7 +111,7 @@ public:
      */
     int receive();
 
-    /** Read from an recevied ethernet packet.
+    /** Read from an received ethernet packet.
      *
      *  After receive returned a number bigger than 0 it is
      *  possible to read bytes from this packet.
@@ -131,11 +132,11 @@ public:
      */
     void address(char *mac);
 
-    /** Returns if an ethernet link is pressent or not. It takes a wile after Ethernet initializion to show up.
+    /** Returns if an ethernet link is present or not. It takes a while after Ethernet initialization to show up.
      *
      *  @returns
-     *   0 if no ethernet link is pressent,
-     *   1 if an ethernet link is pressent.
+     *   0 if no ethernet link is present,
+     *   1 if an ethernet link is present.
      *
      * Example:
      * @code

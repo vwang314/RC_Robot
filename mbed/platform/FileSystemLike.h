@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +60,7 @@ public:
      *  @deprecated Replaced by `int open(FileHandle **, ...)` for propagating error codes
      */
     MBED_DEPRECATED_SINCE("mbed-os-5.5",
-        "Replaced by `int open(FileHandle **, ...)` for propagating error codes")
+                          "Replaced by `int open(FileHandle **, ...)` for propagating error codes")
     FileHandle *open(const char *path, int flags)
     {
         FileHandle *file;
@@ -74,7 +75,7 @@ public:
      *  @deprecated Replaced by `int open(DirHandle **, ...)` for propagating error codes
      */
     MBED_DEPRECATED_SINCE("mbed-os-5.5",
-        "Replaced by `int open(DirHandle **, ...)` for propagating error codes")
+                          "Replaced by `int open(DirHandle **, ...)` for propagating error codes")
     DirHandle *opendir(const char *path)
     {
         DirHandle *dir;

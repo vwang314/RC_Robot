@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +51,8 @@ public:
      *
      *  @param pin DigitalOut pin to connect to
      */
-    DigitalOut(PinName pin) : gpio() {
+    DigitalOut(PinName pin) : gpio()
+    {
         // No lock needed in the constructor
         gpio_init_out(&gpio, pin);
     }
@@ -60,7 +62,8 @@ public:
      *  @param pin DigitalOut pin to connect to
      *  @param value the initial pin value
      */
-    DigitalOut(PinName pin, int value) : gpio() {
+    DigitalOut(PinName pin, int value) : gpio()
+    {
         // No lock needed in the constructor
         gpio_init_out_ex(&gpio, pin, value);
     }
@@ -70,7 +73,8 @@ public:
      *  @param value An integer specifying the pin output value,
      *      0 for logical 0, 1 (or any other non-zero value) for logical 1
      */
-    void write(int value) {
+    void write(int value)
+    {
         // Thread safe / atomic HAL call
         gpio_write(&gpio, value);
     }
@@ -81,7 +85,8 @@ public:
      *    an integer representing the output setting of the pin,
      *    0 for logical 0, 1 for logical 1
      */
-    int read() {
+    int read()
+    {
         // Thread safe / atomic HAL call
         return gpio_read(&gpio);
     }
@@ -92,24 +97,33 @@ public:
      *    Non zero value if pin is connected to uc GPIO
      *    0 if gpio object was initialized with NC
      */
-    int is_connected() {
+    int is_connected()
+    {
         // Thread safe / atomic HAL call
         return gpio_is_connected(&gpio);
     }
 
     /** A shorthand for write()
      * \sa DigitalOut::write()
+     * @code
+     *      DigitalIn  button(BUTTON1);
+     *      DigitalOut led(LED1);
+     *      led = button;   // Equivalent to led.write(button.read())
+     * @endcode
      */
-    DigitalOut& operator= (int value) {
+    DigitalOut &operator= (int value)
+    {
         // Underlying write is thread safe
         write(value);
         return *this;
     }
 
-    /** A shorthand for write()
+    /** A shorthand for write() using the assignment operator which copies the
+     * state from the DigitalOut argument.
      * \sa DigitalOut::write()
      */
-    DigitalOut& operator= (DigitalOut& rhs) {
+    DigitalOut &operator= (DigitalOut &rhs)
+    {
         core_util_critical_section_enter();
         write(rhs.read());
         core_util_critical_section_exit();
@@ -118,14 +132,22 @@ public:
 
     /** A shorthand for read()
      * \sa DigitalOut::read()
+     * @code
+     *      DigitalIn  button(BUTTON1);
+     *      DigitalOut led(LED1);
+     *      led = button;   // Equivalent to led.write(button.read())
+     * @endcode
      */
-    operator int() {
+    operator int()
+    {
         // Underlying call is thread safe
         return read();
     }
 
 protected:
+#if !defined(DOXYGEN_ONLY)
     gpio_t gpio;
+#endif //!defined(DOXYGEN_ONLY)
 };
 
 } // namespace mbed

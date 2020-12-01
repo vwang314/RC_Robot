@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +19,12 @@
 
 #include "platform/platform.h"
 
-#if defined (DEVICE_SERIAL) || defined(DOXYGEN_ONLY)
+#if DEVICE_SERIAL || defined(DOXYGEN_ONLY)
 
-#include "Stream.h"
+#include "platform/Stream.h"
 #include "SerialBase.h"
-#include "PlatformMutex.h"
-#include "serial_api.h"
+#include "platform/PlatformMutex.h"
+#include "hal/serial_api.h"
 #include "platform/NonCopyable.h"
 
 namespace mbed {
@@ -63,12 +64,12 @@ public:
      *  @param tx Transmit pin
      *  @param rx Receive pin
      *  @param name The name of the stream associated with this serial port (optional)
-     *  @param baud The baud rate of the serial port (optional, defaults to MBED_CONF_PLATFORM_DEFAULT_SERIAL_BAUD_RATE)
+     *  @param baud The baud rate of the serial port (optional, defaults to MBED_CONF_PLATFORM_DEFAULT_SERIAL_BAUD_RATE or 9600)
      *
      *  @note
-     *    Either tx or rx may be specified as NC if unused
+     *    Either tx or rx may be specified as NC (Not Connected) if unused
      */
-    Serial(PinName tx, PinName rx, const char *name=NULL, int baud = MBED_CONF_PLATFORM_DEFAULT_SERIAL_BAUD_RATE);
+    Serial(PinName tx, PinName rx, const char *name = NULL, int baud = MBED_CONF_PLATFORM_DEFAULT_SERIAL_BAUD_RATE);
 
 
     /** Create a Serial port, connected to the specified transmit and receive pins, with the specified baud
@@ -78,7 +79,7 @@ public:
      *  @param baud The baud rate of the serial port
      *
      *  @note
-     *    Either tx or rx may be specified as NC if unused
+     *    Either tx or rx may be specified as NC (Not Connected) if unused
      */
     Serial(PinName tx, PinName rx, int baud);
 
@@ -99,6 +100,7 @@ public:
         return SerialBase::writeable();
     }
 
+#if !(DOXYGEN_ONLY)
 protected:
     virtual int _getc();
     virtual int _putc(int c);
@@ -106,6 +108,7 @@ protected:
     virtual void unlock();
 
     PlatformMutex _mutex;
+#endif
 };
 
 } // namespace mbed

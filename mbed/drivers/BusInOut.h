@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,15 +84,15 @@ public:
      */
     int read();
 
-    /** Set as an output
+    /** Set all the pins in bus as output
      */
     void output();
 
-    /** Set as an input
+    /** Set all the pins in bus as an input
      */
     void input();
 
-    /** Set the input pin mode
+    /** Set the input pin mode for all the pins in bus
      *
      *  @param pull PullUp, PullDown, PullNone
      */
@@ -103,31 +104,32 @@ public:
      *  @returns
      *    Binary mask of connected pins
      */
-    int mask() {
+    int mask()
+    {
         // No lock needed since _nc_mask is not modified outside the constructor
         return _nc_mask;
     }
 
-     /** A shorthand for write()
+    /** A shorthand for write()
     * \sa BusInOut::write()
-      */
-    BusInOut& operator= (int v);
-    BusInOut& operator= (BusInOut& rhs);
+     */
+    BusInOut &operator= (int v);
+    BusInOut &operator= (BusInOut &rhs);
 
     /** Access to particular bit in random-iterator fashion
      * @param index  Bit Position
      */
-    DigitalInOut& operator[] (int index);
+    DigitalInOut &operator[](int index);
 
     /** A shorthand for read()
      * \sa BusInOut::read()
      */
     operator int();
-
+#if !defined(DOXYGEN_ONLY)
 protected:
     virtual void lock();
     virtual void unlock();
-    DigitalInOut* _pin[16];
+    DigitalInOut *_pin[16];
 
     /* Mask of bus's NC pins
      * If bit[n] is set to 1 - pin is connected
@@ -136,6 +138,7 @@ protected:
     int _nc_mask;
 
     PlatformMutex _mutex;
+#endif
 };
 
 } // namespace mbed

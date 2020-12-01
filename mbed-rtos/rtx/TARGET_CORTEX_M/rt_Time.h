@@ -1,12 +1,15 @@
+
+/** \addtogroup rtos */
+/** @{*/
 /*----------------------------------------------------------------------------
- *      RL-ARM - RTX
+ *      CMSIS-RTOS  -  RTX
  *----------------------------------------------------------------------------
  *      Name:    RT_TIME.H
  *      Purpose: Delay and interval wait functions definitions
- *      Rev.:    V4.60
+ *      Rev.:    V4.70
  *----------------------------------------------------------------------------
  *
- * Copyright (c) 1999-2009 KEIL, 2009-2012 ARM Germany GmbH
+ * Copyright (c) 1999-2009 KEIL, 2009-2013 ARM Germany GmbH
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -45,3 +48,5 @@ extern void rt_itv_wait (void);
  * end of file
  *---------------------------------------------------------------------------*/
 
+
+/** @}*/

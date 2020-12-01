@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +33,7 @@ namespace mbed {
  * @{
  */
 
-FILEHANDLE local_file_open(const char* name, int flags);
+FILEHANDLE local_file_open(const char *name, int flags);
 
 /**
  * @class LocalFileHandle
@@ -106,7 +107,8 @@ class LocalFileSystem : public FileSystemLike, private NonCopyable<LocalFileSyst
     // No modifiable state
 
 public:
-    LocalFileSystem(const char* n) : FileSystemLike(n) {
+    LocalFileSystem(const char *n) : FileSystemLike(n)
+    {
 
     }
 

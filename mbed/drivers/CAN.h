@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +19,7 @@
 
 #include "platform/platform.h"
 
-#if defined (DEVICE_CAN) || defined(DOXYGEN_ONLY)
+#if DEVICE_CAN || defined(DOXYGEN_ONLY)
 
 #include "hal/can_api.h"
 #include "platform/Callback.h"
@@ -38,7 +39,8 @@ class CANMessage : public CAN_Message {
 public:
     /** Creates empty CAN message.
      */
-    CANMessage() : CAN_Message() {
+    CANMessage() : CAN_Message()
+    {
         len    = 8;
         type   = CANData;
         format = CANStandard;
@@ -54,12 +56,13 @@ public:
      *  @param _type    Type of Data: Use enum CANType for valid parameter values
      *  @param _format  Data Format: Use enum CANFormat for valid parameter values
      */
-    CANMessage(int _id, const char *_data, char _len = 8, CANType _type = CANData, CANFormat _format = CANStandard) {
-      len    = _len & 0xF;
-      type   = _type;
-      format = _format;
-      id     = _id;
-      memcpy(data, _data, _len);
+    CANMessage(unsigned _id, const char *_data, char _len = 8, CANType _type = CANData, CANFormat _format = CANStandard)
+    {
+        len    = _len & 0xF;
+        type   = _type;
+        format = _format;
+        id     = _id;
+        memcpy(data, _data, _len);
     }
 
     /** Creates CAN remote message.
@@ -67,12 +70,13 @@ public:
      *  @param _id      Message ID
      *  @param _format  Data Format: Use enum CANType for valid parameter values
      */
-    CANMessage(int _id, CANFormat _format = CANStandard) {
-      len    = 0;
-      type   = CANRemote;
-      format = _format;
-      id     = _id;
-      memset(data, 0, 8);
+    CANMessage(unsigned _id, CANFormat _format = CANStandard)
+    {
+        len    = 0;
+        type   = CANRemote;
+        format = _format;
+        id     = _id;
+        memset(data, 0, 8);
     }
 };
 
@@ -82,7 +86,7 @@ public:
 class CAN : private NonCopyable<CAN> {
 
 public:
-    /** Creates an CAN interface connected to specific pins.
+    /** Creates a CAN interface connected to specific pins.
      *
      *  @param rd read from transmitter
      *  @param td transmit to transmitter
@@ -91,11 +95,14 @@ public:
      * @code
      * #include "mbed.h"
      *
+     *
      * Ticker ticker;
      * DigitalOut led1(LED1);
      * DigitalOut led2(LED2);
-     * CAN can1(p9, p10);
-     * CAN can2(p30, p29);
+     * //The constructor takes in RX, and TX pin respectively.
+     * //These pins, for this example, are defined in mbed_app.json
+     * CAN can1(MBED_CONF_APP_CAN1_RD, MBED_CONF_APP_CAN1_TD);
+     * CAN can2(MBED_CONF_APP_CAN2_RD, MBED_CONF_APP_CAN2_TD);
      *
      * char counter = 0;
      *
@@ -118,14 +125,15 @@ public:
      *         wait(0.2);
      *     }
      * }
+     *
      * @endcode
      */
     CAN(PinName rd, PinName td);
 
     /** Initialize CAN interface and set the frequency
       *
-      * @param rd the rd pin
-      * @param td the td pin
+      * @param rd the read pin
+      * @param td the transmit pin
       * @param hz the bus frequency in hertz
       */
     CAN(PinName rd, PinName td, int hz);
@@ -194,7 +202,7 @@ public:
      */
     int mode(Mode mode);
 
-    /** Filter out incomming messages
+    /** Filter out incoming messages
      *
      *  @param id the id to filter on
      *  @param mask the mask applied to the id
@@ -235,60 +243,64 @@ public:
 
     /** Attach a function to call whenever a CAN frame received interrupt is
      *  generated.
-     *  
+     *
      *  This function locks the deep sleep while a callback is attached
-     *  
+     *
      *  @param func A pointer to a void function, or 0 to set as none
      *  @param type Which CAN interrupt to attach the member function to (CAN::RxIrq for message received, CAN::TxIrq for transmitted or aborted, CAN::EwIrq for error warning, CAN::DoIrq for data overrun, CAN::WuIrq for wake-up, CAN::EpIrq for error passive, CAN::AlIrq for arbitration lost, CAN::BeIrq for bus error)
      */
-    void attach(Callback<void()> func, IrqType type=RxIrq);
+    void attach(Callback<void()> func, IrqType type = RxIrq);
 
-   /** Attach a member function to call whenever a CAN frame received interrupt
-    *  is generated.
-    *
-    *  @param obj pointer to the object to call the member function on
-    *  @param method pointer to the member function to be called
-    *  @param type Which CAN interrupt to attach the member function to (CAN::RxIrq for message received, TxIrq for transmitted or aborted, EwIrq for error warning, DoIrq for data overrun, WuIrq for wake-up, EpIrq for error passive, AlIrq for arbitration lost, BeIrq for bus error)
-    *  @deprecated
-    *      The attach function does not support cv-qualifiers. Replaced by
-    *      attach(callback(obj, method), type).
-    */
+    /** Attach a member function to call whenever a CAN frame received interrupt
+     *  is generated.
+     *
+     *  @param obj pointer to the object to call the member function on
+     *  @param method pointer to the member function to be called
+     *  @param type Which CAN interrupt to attach the member function to (CAN::RxIrq for message received, TxIrq for transmitted or aborted, EwIrq for error warning, DoIrq for data overrun, WuIrq for wake-up, EpIrq for error passive, AlIrq for arbitration lost, BeIrq for bus error)
+     *  @deprecated
+     *      The attach function does not support cv-qualifiers. Replaced by
+     *      attach(callback(obj, method), type).
+     */
     template<typename T>
     MBED_DEPRECATED_SINCE("mbed-os-5.1",
-        "The attach function does not support cv-qualifiers. Replaced by "
-        "attach(callback(obj, method), type).")
-    void attach(T* obj, void (T::*method)(), IrqType type=RxIrq) {
+                          "The attach function does not support cv-qualifiers. Replaced by "
+                          "attach(callback(obj, method), type).")
+    void attach(T *obj, void (T::*method)(), IrqType type = RxIrq)
+    {
         // Underlying call thread safe
         attach(callback(obj, method), type);
     }
 
-   /** Attach a member function to call whenever a CAN frame received interrupt
-    *  is generated.
-    *
-    *  @param obj pointer to the object to call the member function on
-    *  @param method pointer to the member function to be called
-    *  @param type Which CAN interrupt to attach the member function to (CAN::RxIrq for message received, TxIrq for transmitted or aborted, EwIrq for error warning, DoIrq for data overrun, WuIrq for wake-up, EpIrq for error passive, AlIrq for arbitration lost, BeIrq for bus error)
-    *  @deprecated
-    *      The attach function does not support cv-qualifiers. Replaced by
-    *      attach(callback(obj, method), type).
-    */
+    /** Attach a member function to call whenever a CAN frame received interrupt
+     *  is generated.
+     *
+     *  @param obj pointer to the object to call the member function on
+     *  @param method pointer to the member function to be called
+     *  @param type Which CAN interrupt to attach the member function to (CAN::RxIrq for message received, TxIrq for transmitted or aborted, EwIrq for error warning, DoIrq for data overrun, WuIrq for wake-up, EpIrq for error passive, AlIrq for arbitration lost, BeIrq for bus error)
+     *  @deprecated
+     *      The attach function does not support cv-qualifiers. Replaced by
+     *      attach(callback(obj, method), type).
+     */
     template<typename T>
     MBED_DEPRECATED_SINCE("mbed-os-5.1",
-        "The attach function does not support cv-qualifiers. Replaced by "
-        "attach(callback(obj, method), type).")
-    void attach(T* obj, void (*method)(T*), IrqType type=RxIrq) {
+                          "The attach function does not support cv-qualifiers. Replaced by "
+                          "attach(callback(obj, method), type).")
+    void attach(T *obj, void (*method)(T *), IrqType type = RxIrq)
+    {
         // Underlying call thread safe
         attach(callback(obj, method), type);
     }
 
     static void _irq_handler(uint32_t id, CanIrqType type);
 
+#if !defined(DOXYGEN_ONLY)
 protected:
     virtual void lock();
     virtual void unlock();
     can_t               _can;
     Callback<void()>    _irq[IrqCnt];
     PlatformMutex       _mutex;
+#endif
 };
 
 } // namespace mbed

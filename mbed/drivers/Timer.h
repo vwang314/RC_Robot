@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,7 @@
 #include "platform/platform.h"
 #include "hal/ticker_api.h"
 #include "platform/NonCopyable.h"
-#include "platform/mbed_sleep.h"
+#include "platform/mbed_power_mgmt.h"
 
 namespace mbed {
 /** \addtogroup drivers */
@@ -30,7 +31,7 @@ namespace mbed {
  *
  * Example:
  * @code
- * // Count the time to toggle a LED
+ * // Count the time to toggle an LED
  *
  * #include "mbed.h"
  *
@@ -65,7 +66,7 @@ public:
 
     /** Reset the timer to 0.
      *
-     * If it was already counting, it will continue
+     * If it was already running, it will continue
      */
     void reset();
 
@@ -75,15 +76,15 @@ public:
      */
     float read();
 
-    /** Get the time passed in milli-seconds
+    /** Get the time passed in milliseconds
      *
-     *  @returns    Time passed in milli seconds
+     *  @returns    Time passed in milliseconds
      */
     int read_ms();
 
-    /** Get the time passed in micro-seconds
+    /** Get the time passed in microseconds
      *
-     *  @returns    Time passed in micro seconds
+     *  @returns    Time passed in microseconds
      */
     int read_us();
 
@@ -91,18 +92,21 @@ public:
      */
     operator float();
 
-    /** Get in a high resolution type the time passed in micro-seconds.
+    /** Get in a high resolution type the time passed in microseconds.
+     *  Returns a 64 bit integer.
      */
     us_timestamp_t read_high_resolution_us();
 
+#if !defined(DOXYGEN_ONLY)
 protected:
     us_timestamp_t slicetime();
     int _running;            // whether the timer is running
     us_timestamp_t _start;   // the start time of the latest slice
     us_timestamp_t _time;    // any accumulated time from previous slices
     const ticker_data_t *_ticker_data;
-    bool _lock_deepsleep;    // flag which indicates if deep-sleep should be disabled
+    bool _lock_deepsleep;    // flag that indicates if deep sleep should be disabled
 };
+#endif
 
 } // namespace mbed
 

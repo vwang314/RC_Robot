@@ -1,5 +1,6 @@
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +88,8 @@ public:
      *  @returns
      *    Binary mask of connected pins
      */
-    int mask() {
+    int mask()
+    {
         // No lock needed since _nc_mask is not modified outside the constructor
         return _nc_mask;
     }
@@ -95,23 +97,23 @@ public:
     /** A shorthand for write()
      * \sa BusOut::write()
      */
-    BusOut& operator= (int v);
-    BusOut& operator= (BusOut& rhs);
+    BusOut &operator= (int v);
+    BusOut &operator= (BusOut &rhs);
 
     /** Access to particular bit in random-iterator fashion
      * @param index  Bit Position
      */
-    DigitalOut& operator[] (int index);
+    DigitalOut &operator[](int index);
 
     /** A shorthand for read()
      * \sa BusOut::read()
      */
     operator int();
-
+#if !defined(DOXYGEN_ONLY)
 protected:
     virtual void lock();
     virtual void unlock();
-    DigitalOut* _pin[16];
+    DigitalOut *_pin[16];
 
     /* Mask of bus's NC pins
      * If bit[n] is set to 1 - pin is connected
@@ -120,6 +122,7 @@ protected:
     int _nc_mask;
 
     PlatformMutex _mutex;
+#endif
 };
 
 } // namespace mbed
