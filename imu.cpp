@@ -81,5 +81,160 @@ void check_imu_func(){   //check imu to find current location and heading
 }
 
 void return_to_origin(float x, float y){    //function to return to origin given origin's location relative to the robot
+    //origin is at (x,y) and robot is at (0,0)
+    imu.readMag();
+    float dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));   //robot current heading
+    
+    /*float origin_dir = atan2(y,x)*180/PI;       //angle of origin
+    if(90 < origin_dir && origin_dir < 180){origin_dir -= 360;}                 //convert trig angle (0 at east, 90 at north) to magnetic heading (0 at north, 90 at east)
+    origin_dir = 90 - origin_dir;
+    
+    if(dir < origin_dir){     //face direction of origin
+        while(dir < origin_dir){
+            left.speed(0.2);
+            right.speed(-0.2);
+            imu.readMag();
+            dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+        }
+    } else if(dir > origin_dir){
+        while(dir > origin_dir){
+            left.speed(-0.2);
+            right.speed(0.2);
+            imu.readMag();
+            dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+        }
+    }
+    left.stop(0.5);
+    right.stop(0.5);
 
+    x_pos = 0.0;
+    y_pos = 0.0;
+    moving = false;
+    Check_IMU.start(check_imu_func);
+    while( (abs(x_pos) < abs(x)) || (abs(y_pos) < abs(y)) ){
+        moving = true;
+        left.speed(0.3);
+        right.speed(0.3);
+    }
+    Check_IMU.terminate();
+    moving = false;
+    left.stop(0.5);
+    right.stop(0.5); */
+      
+    if(x<0) {    //if origin is to left of robot
+        if(dir > 270.0){       //turn to face left
+            while(dir > 270.0){
+                left.speed(-0.2);
+                right.speed(0.2);
+                imu.readMag();
+                dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+                pc.printf("heading: %9f \n\r", dir);
+            }
+        } else {
+            while(dir < 270.0){
+                left.speed(0.2);
+                right.speed(-0.2);
+                imu.readMag();
+                dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+                pc.printf("heading: %9f \n\r", dir);
+            }
+        }
+        left.stop(0.5);
+        right.stop(0.5);
+        moving = true;
+        Check_IMU.start(check_imu_func);  
+        while(x_pos > x){       //keep going left until at the x value of the origin
+            left.speed(0.3);
+            right.speed(0.3);
+        }
+        moving = false;
+        left.stop(0.5);
+        right.stop(0.5);
+    } else if(x>0){     //if origin is to the right
+        if(dir < 90.0){       //turn to face right
+            while(dir < 90.0){
+                left.speed(0.2);
+                right.speed(-0.2);
+                imu.readMag();
+                dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+                pc.printf("heading: %9f \n\r", dir);
+            }
+        } else {
+            while(dir > 90.0){
+                left.speed(-0.2);
+                right.speed(0.2);
+                imu.readMag();
+                dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+                pc.printf("heading: %9f \n\r", dir);
+            }
+        }
+        left.stop(0.5);
+        right.stop(0.5);
+        moving = true;   
+        while(x_pos < x){       //keep going right until at x-value of origin
+            left.speed(0.3);
+            right.speed(0.3);
+        }
+        moving = false;
+        left.stop(0.5);
+        right.stop(0.5);        
+    }
+    if(y_pos > y){       //if origin is below robot
+        if(dir < 180.0){       //turn to face down
+            while(dir < 180.0){
+                left.speed(0.2);
+                right.speed(-0.2);
+                imu.readMag();
+                dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+                pc.printf("heading: %9f \n\r", dir);
+            }
+        } else {
+            while(dir > 180.0){
+                left.speed(-0.2);
+                right.speed(0.2);
+                imu.readMag();
+                dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+                pc.printf("heading: %9f \n\r", dir);
+            }
+        }
+        left.stop(0.5);
+        right.stop(0.5);
+        moving = true;   
+        while(y_pos > y){       //keep going down until at the origin
+            left.speed(0.3);
+            right.speed(0.3);
+        }
+        moving = false;
+        left.stop(0.5);
+        right.stop(0.5);
+    } else if(y_pos < y){
+        if(dir+180 < 360.0){       //turn to face up
+            while(dir < 180){
+                left.speed(-0.2);
+                right.speed(0.2);
+                imu.readMag();
+                dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+                pc.printf("heading: %9f \n\r", dir);
+            }
+        } else {
+            while(dir+180 > 360.0){
+                left.speed(0.2);
+                right.speed(-0.2);
+                imu.readMag();
+                dir = calc_heading(imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+                pc.printf("heading: %9f \n\r", dir);
+            }
+        }
+        left.stop(0.5);
+        right.stop(0.5);
+        moving = true;   
+        while(y_pos < y){       //keep going up until at the origin
+            left.speed(0.3);
+            right.speed(0.3);
+        }
+        Check_IMU.terminate();
+        moving = false;
+        left.stop(0.5);
+        right.stop(0.5);
+    }
 }
