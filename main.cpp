@@ -5,12 +5,14 @@
 #include "motordriver.h"
 #include "collision.h"
 #include "imu.h"
+#include "MMA8452.h"
 
 Serial pc(USBTX, USBRX);
 Serial blue(p13, p14);
 Motor left(p21, p25, p26, 1);
 Motor right(p22, p30, p29, 1);
 LSM9DS1 imu(p28, p27, 0xD6, 0x3C);
+MMA8452 acc(p9, p10, 9600);        // Accelerometer (sda, sdc, rate)
 bool moving = false;
 bool originSet = false;
 float x_pos = 0.0;
@@ -18,7 +20,7 @@ float y_pos = 0.0;
 float heading = 0.0;
 ultrasonic sens1(p5, p6, .1, .2, &dist1);
 ultrasonic sens2(p7, p8, .1, .2, &dist2);
-ultrasonic sens3(p9, p10, .1, .2, &dist3);
+//ultrasonic sens3(p9, p10, .1, .2, &dist3);
 ultrasonic sens4(p11, p12, .1, .2, &dist4);
 Thread Check_Dist;
 Thread Check_IMU;
@@ -26,6 +28,7 @@ Thread Check_IMU;
 
 //Main thread with bluetooth control
 int main(){
+    acc.activate();
     imu.begin();
     if(!imu.begin()){
         pc.printf("Failed to communicate with LSM9DS1.\n");
@@ -34,11 +37,11 @@ int main(){
     left.speed(0.2);
     right.speed(-0.2);
     imu.calibrateMag(0);
-    left.stop(0.5);
-    right.stop(0.5);
+    left.stop(0.2);
+    right.stop(0.2);
     sens1.startUpdates();
     sens2.startUpdates();
-    sens3.startUpdates();
+    //sens3.startUpdates();
     sens4.startUpdates();
     //Check_Dist.start(check_dist_func);
     char bnum=0;
@@ -54,10 +57,12 @@ int main(){
                         case '1': //number button 1,  set "home" position
                             if (bhit=='1') {
                                 //add hit code here
-                                originSet = true;
-                                x_pos = 0.0;
-                                y_pos = 0.0;
-                                Check_IMU.start(check_imu_func);
+                                //if(!originSet){
+                                    originSet = true;
+                                    x_pos = 0.0;
+                                    y_pos = 0.0;
+                                    Check_IMU.start(check_imu_func);
+                                //}
                             } else {
                                 //add release code here
                             }
@@ -68,8 +73,9 @@ int main(){
                                     Check_IMU.terminate();
                                     //Check_Dist.terminate();     
                                     moving = false;
-                                    left.stop(0.5);
-                                    right.stop(0.5);
+                                    Thread::wait(10);
+                                    left.stop(0.2);
+                                    right.stop(0.2);
                                     return_to_origin(-x_pos, -y_pos);
                                     //Check_Dist.start(check_dist_func);
                                     originSet = false;
@@ -85,8 +91,9 @@ int main(){
                                 right.speed(0.3);
                             } else {
                                 moving = false;
-                                left.stop(0.5);
-                                right.stop(0.5);
+                                Thread::wait(10);
+                                left.stop(0.2);
+                                right.stop(0.2);
                             }
                             break;
                         case '6': //button 6 down arrow
@@ -96,8 +103,9 @@ int main(){
                                 right.speed(-0.3);
                             } else {
                                 moving = false;
-                                left.stop(0.5);
-                                right.stop(0.5);
+                                Thread::wait(10);
+                                left.stop(0.2);
+                                right.stop(0.2);
                             }
                             break;
                         case '7': //button 7 left arrow
@@ -105,8 +113,8 @@ int main(){
                                 left.speed(-0.2);
                                 right.speed(0.2);
                             } else {
-                                left.stop(0.5);
-                                right.stop(0.5);
+                                left.stop(0.2);
+                                right.stop(0.2);
                             }
                             break;
                         case '8': //button 8 right arrow
@@ -114,8 +122,8 @@ int main(){
                                 left.speed(0.2);
                                 right.speed(-0.2);
                             } else {
-                                left.stop(0.5);
-                                right.stop(0.5);
+                                left.stop(0.2);
+                                right.stop(0.2);
                             }
                             break;
                         default:
